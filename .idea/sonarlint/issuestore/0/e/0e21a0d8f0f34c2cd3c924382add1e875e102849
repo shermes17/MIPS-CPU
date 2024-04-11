@@ -1,0 +1,11 @@
+
+wpython:S1192Z"YDefine a constant instead of duplicating this literal "Register is out of range" 4 times.(¹Û48å‘™×è1
+rpython:S1192P"NDefine a constant instead of duplicating this literal "Invalid sytax" 3 times.(ÁûŞœüÿÿÿÿ8æ‘™×è1
+opython:S1192?"PDefine a constant instead of duplicating this literal "ERROR on line " 12 times.(ù §8æ‘™×è1
+ppython:S1542"RRename function "write_R_Type" to match the regular expression ^[a-z_][a-z0-9_]*$.(ş¯İk8ç‘™×è1
+Opython:S5806#"+Rename this variable; it shadows a builtin.(ÓÁ•üÿÿÿÿ8ç‘™×è1
+vpython:S1542'"RRename function "write_I_Type" to match the regular expression ^[a-z_][a-z0-9_]*$.( ¨šµşÿÿÿÿ8ç‘™×è1
+Opython:S5806+"+Rename this variable; it shadows a builtin.(ÓÁ•üÿÿÿÿ8ç‘™×è1
+vpython:S1542/"RRename function "write_J_Type" to match the regular expression ^[a-z_][a-z0-9_]*$.(ŞÑæùÿÿÿÿ8è‘™×è1
+ypython:S15427"URename function "parse_MIPS_line" to match the regular expression ^[a-z_][a-z0-9_]*$.( Û”úÿÿÿÿ8è‘™×è1
+xpython:S37767"TRefactor this function to reduce its Cognitive Complexity from 76 to the 15 allowed.( Û”úÿÿÿÿ8é‘™×è1

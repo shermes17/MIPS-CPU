@@ -16,15 +16,16 @@ import sys
 OPCODES = { 'lw'  : '100011',
             'sw'  : '101011',
             'beq' : '000100',
-            'j'   : '000010'
+            'j'   : '000010',
+            'addi': '001000'
             }
 
 FUNCTS = {  'add' : '100000',
             'sub' : '100010',
             'and' : '100100',
             'or'  : '100101',
-            'slt' : '101010' 
-            } 
+            'slt' : '101010'
+            }
 
 
 
@@ -35,7 +36,7 @@ def write_R_Type(output_file, op, rs, rt,rd, shamt, funct):
     bytes = int(binstr, 2).to_bytes(4, byteorder = 'big')
     # write bytes to output file
     output_file.write(bytes)
-   
+
 def write_I_Type(output_file, op, rt, rs, imm ):
     # create a string of 32 bits
     binstr = op + rt + rs + imm
@@ -109,7 +110,7 @@ def parse_MIPS_line(line,output_file, i):
             i+=1
         reg = int(reg)
         imm = int(imm)
-        # check ranges 
+        # check ranges
         if reg < 0 or reg > 31: # ERROR CHECKING
             print("ERROR on line " + str(i) + ": "+ "Register is out of range")
             return
@@ -125,11 +126,11 @@ def parse_MIPS_line(line,output_file, i):
         registers.append(reg)
         # write to output
         write_I_Type(output_file,
-            OPCODES[opcode],
-            format(registers[1], '05b'),
-            format(registers[0], '05b'),
-            imm
-        )
+                     OPCODES[opcode],
+                     format(registers[1], '05b'),
+                     format(registers[0], '05b'),
+                     imm
+                     )
     elif (opcode == 'beq'): # I-Type beq
         imm = int(parts[2])
         # check range
@@ -163,11 +164,49 @@ def parse_MIPS_line(line,output_file, i):
             registers.append(num)
         # write to output
         write_I_Type(output_file,
-            OPCODES[opcode],
-            format(registers[0], '05b'),
-            format(registers[1], '05b'),
-            imm
-        )    
+                     OPCODES[opcode],
+                     format(registers[0], '05b'),
+                     format(registers[1], '05b'),
+                     imm
+                     )
+    elif (opcode == 'addi'): # I-Type addi (added for project 2)
+        imm = int(parts[2])
+        # check range
+        if (imm < (-2 ** 15) or imm > (2**15) -1): # ERROR
+            print("ERROR on line " + str(i) + ": "+ "Immediate is out of range")
+            return
+        # convert to binary string
+        if imm < 0:
+            imm = format(imm & 0xFFFF, '016b')
+        else:
+            imm = format(imm, '016b')
+        parts = parts[:-1]
+
+        # parse registers
+        for part in parts:
+            cur = ""
+            # register starts with '$'
+            if part[0] != '$': # ERROR
+                print("ERROR on line " + str(i) + ": "+ "Invalid sytax")
+                return
+            # remove excess chars
+            for c in part:
+                if(c != '$' and c != ',' and c != '\n'):
+                    cur = cur + c
+            # check range
+            num = int(cur)
+            if num < 0 or num > 31: # ERROR
+                print("ERROR on line " + str(i) + ": "+ "Register is out of range")
+                return
+            # add to list
+            registers.append(num)
+        # write to output
+        write_I_Type(output_file,
+                     OPCODES[opcode],
+                     format(registers[1], '05b'),
+                     format(registers[0], '05b'),
+                     imm
+                     )
     else: # R-Type
         # loop through remaining registers
         for part in parts:
@@ -193,14 +232,14 @@ def parse_MIPS_line(line,output_file, i):
             return
         # write to output
         write_R_Type(output_file,
-            '000000',
-            format(registers[1], '05b'),
-            format(registers[2], '05b'),
-            format(registers[0], '05b'),
-            '00000',
-            FUNCTS[opcode]
-        )
-       
+                     '000000',
+                     format(registers[1], '05b'),
+                     format(registers[2], '05b'),
+                     format(registers[0], '05b'),
+                     '00000',
+                     FUNCTS[opcode]
+                     )
+
 def main():
     # check command line arguments
     if len(sys.argv) != 3:
