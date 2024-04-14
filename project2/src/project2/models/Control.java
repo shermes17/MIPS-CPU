@@ -7,13 +7,6 @@ import java.util.ArrayList;
 public class Control {
     // Define control signals with enumerations
 
-    /*
-      enum ControlSignal {
-        REG_DST, REG_WRITE, ALU_SRC, PC_SRC, MEM_READ, MEM_WRITE, MEM_TO_REG, BRANCH, ALU_OP1, ALU_OP0, JUMP
-    }
-
-     */
-
     private int ALUop;
 
     // map that stores current status of each control signal
@@ -56,6 +49,9 @@ public class Control {
             controlSignals.put(signal, true);
         }
     }
+    // map that stores current status of each control signal
+
+
 
     //reset signals to false
     public void reset() {
@@ -63,11 +59,7 @@ public class Control {
             controlSignals.put(signal, false);
         }
     }
-    /*
-      public boolean getSignal(ControlSignal signal) {
-        return controlSignals.getOrDefault(signal, false);
-    }
-     */
+
 
     public List<ControlSignal> getActiveSignals() {
         List<ControlSignal> activeSignals = new ArrayList<>();
@@ -81,3 +73,5 @@ public class Control {
 
     public int getALUop(){return this.ALUop;}
 }
+
+
