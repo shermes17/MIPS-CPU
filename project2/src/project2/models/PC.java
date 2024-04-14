@@ -16,9 +16,8 @@ public class PC {
 
     private int address;
 
-    public void PC(ScoreBoard view, Controller controller){
+    public void PC(){
         address = 0; // address starts at 0
-
     }
 
     public int getAddress(){

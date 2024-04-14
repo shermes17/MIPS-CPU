@@ -1,20 +1,21 @@
 package project2.models;
 
-package models;
 
 public class ALU {
     private boolean zero;
-    Scoreboard view;
+
     boolean pcOp;
 
-    public ALU(boolean pcOp) {
+    private int result;
+
+    public ALU() {
         zero = false;
-        this.pcOp = pcOp;
+        this.pcOp = false;
+        this.result = 0;
     }
 
     public int arithmetic(int reg1, int reg2, int ALUControlInput) {
         int type;
-        byte result = 0;
         switch (ALUControlInput) {
             case 0b0000: // AND
                 result = reg1 & reg2;
@@ -54,7 +55,7 @@ public class ALU {
     public boolean getZero() {
         return this.zero;
     }
-    public byte getResult() {
+    public int getResult() {
         return this.result;
     }
 }

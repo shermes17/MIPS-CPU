@@ -2,15 +2,17 @@ package project2.models;
 
 public class ALUControl {
 
-    private int ALUInput;
+    private int Input;
+
 
     public ALUControl() {
-        Input = 0;
+        this.Input = 0;
     }
 
-    public void buildInput(String funct, Control control) {
+    public void buildInput(int funct, Control control) {
 
-        int ALUOp;
+        /*
+            int ALUOp;
         if (control.getALUOp1() == true && control.getALUOp0() == true) {
             ALUOp = 0b11;
         } else if (control.getALUOp1() == true) {
@@ -19,8 +21,10 @@ public class ALUControl {
             ALUOp = 0b01;
         } else
             ALUOp = 0b00;
+         */
 
-        switch (ALUOp) {
+
+        switch (control.getALUop()) {
             case 0b00:
                 Input = 0b0010; // add
                 break;
@@ -31,25 +35,28 @@ public class ALUControl {
             case 0b11:
 
                 switch (funct) {
-                    case "100000":
+                    case 0b100000:
                         Input = 0b0010; // add
                         break;
-                    case "100010":
+                    case 0b100010:
                         Input = 0b0110; // sub
                         break;
-                    case "100100":
+                    case 0b100100:
                         Input = 0b0000; // and
                         break;
-                    case "100101":
+                    case 0b100101:
                         Input = 0b0001; // or
                         break;
-                    case "101010":
+                    case 0b101010:
                         Input = 0b0111; // set on less than
+                        break;
+                    default:
                         break;
                 }
                 break;
             default:
-                System.err.println("Error: Invalid ALU Op);
+                System.err.println("Error: Invalid ALU Op");
+                break;
         }
     }
 
@@ -58,6 +65,6 @@ public class ALUControl {
     }
 
     public void reset() {
-        ALUInput = 0;
+        Input = 0;
     }
 }

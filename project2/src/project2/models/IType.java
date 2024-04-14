@@ -10,7 +10,7 @@ public class IType extends Instruction {
       rs =
      */
     public IType(int instruction){
-        super(instruction >>> 26);
+        super(instruction >>> 26,'I');
         this.rs = (instruction >>> 21) & 0x1F;
         this.rt = (instruction >>> 16) & 0x1F;
         this.imm = instruction & 0xFFFF;

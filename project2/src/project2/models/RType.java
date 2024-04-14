@@ -4,13 +4,12 @@ public class RType extends Instruction {
     private int rs;
     private int rt;
     private int rd;
-
     private int funct;
     private int shamt;
 
 
     public RType(int instruction) {
-        super(instruction >>> 26); // Opcode is the top 6 bits
+        super(instruction >>> 26,'R'); // Opcode is the top 6 bits
         this.rs = (instruction >>> 21) & 0x1F;  // Extract rs (bits 21-25)
         this.rt = (instruction >>> 16) & 0x1F;  // Extract rt (bits 16-20)
         this.rd = (instruction >>> 11) & 0x1F;  // Extract rd (bits 11-15)

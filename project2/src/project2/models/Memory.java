@@ -4,6 +4,8 @@ public class Memory {
     private byte[] dataMemory;
     private byte[] instructionMemory;
 
+    private int numInstructions;
+
     public Memory() {
 
         this.dataMemory = new byte[256];
@@ -58,4 +60,9 @@ public class Memory {
         }
         return instruction;
     }
+
+    public void setNumInstructions(int num){this.numInstructions = num;}
+    public int getNumInstructions(){return this.numInstructions;}
+
+
 }
