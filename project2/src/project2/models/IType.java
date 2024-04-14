@@ -5,10 +5,14 @@ public class IType extends Instruction {
     private int rs;
     private int rt;
     private int imm;
-    /*
 
-      rs =
-     */
+    public IType(){
+        super(0,'I');
+        this.rs = 0;
+        this.rt = 0;
+        this.imm = 0;
+    }
+
     public IType(int instruction){
         super(instruction >>> 26,'I');
         this.rs = (instruction >>> 21) & 0x1F;

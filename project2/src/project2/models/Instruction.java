@@ -9,11 +9,11 @@ public abstract class Instruction {
         this.opcode = opcode;
         this.type = type;
     }
-    int getOpcode(){
+    public int getOpcode(){
         return opcode;
     }
 
-    char getType(){return type;}
+    public char getType(){return type;}
 
 
 

@@ -31,7 +31,7 @@ public class Control {
                 setSignals(ControlSignal.BRANCH, ControlSignal.ALU_OP0);
                 ALUop = 0b01; // 01
                 break;
-            case 0b100011: // lw (Corrected opcode for lw)
+            case 0b100011: // lw
                 setSignals(ControlSignal.ALU_SRC, ControlSignal.MEM_TO_REG, ControlSignal.REG_WRITE, ControlSignal.MEM_READ);
                 ALUop = 0b00;
                 break;

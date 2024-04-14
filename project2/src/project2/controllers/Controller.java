@@ -4,10 +4,16 @@ import project2.models.*;
 import project2.views.*;
 
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.IOException;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Controller {
 
@@ -35,9 +41,17 @@ public class Controller {
         this.alu = new ALU();
         this.aluControl = new ALUControl();
 
-        int num =  (int) (Files.size(Paths.get(fileName))/4);
-        memory.setNumInstructions(num);
-        byte[] data = Files.readAllBytes(Paths.get(fileName));
+
+
+        InputStream inputStream = new FileInputStream(fileName);
+        long fileSize = new File(fileName).length();
+
+        // Read binary file data
+        byte[] data = new byte[(int) fileSize];
+
+        int num =  (int) fileSize;
+        memory.setNumInstructions((int)fileSize);
+
 
         int ins = 0;
         int address = 0;
@@ -62,33 +76,65 @@ public class Controller {
         while(pc.getAddress() < memory.getNumInstructions() * 4){
 
             // get current instruct and execute
-            Instruction instruction = memory.getInstruction(pc.getAddress());
+            Instruction ins =  memory.getInstruction(pc.getAddress());
+            RType rIns;
+            IType iIns;
+            JType jIns;
 
-            control.opcodeDecode(instruction.getOpcode());
-            List<ControlSignal> sigs = control.getActiveSignals();
 
-            switch (instruction.getType()){
+            int rs, rt, rd, imm, result, address;
+            switch (ins.getType()){
                 case 'R':
-                    int rs = registers.getRegister(instruction.getRs());
-                    int rt = registers.getRegister(instruction.getRt());
-                    int rd = instruction.getRd();
+                    rIns = (RType) memory.getInstruction(pc.getAddress());
+                    control.opcodeDecode(rIns.getOpcode());
+                     rs = registers.readRegisterValue(rIns.getRS());
+                     rt = registers.readRegisterValue(rIns.getRT());
+                     rd = rIns.getRD();
 
-                    aluControl.buildInput(instruction.getFunct(),control);
-                    int result = alu.arithmetic(rs,rt, aluControl.getInput());
+                    aluControl.buildInput(rIns.getFunct(),control);
+                     result = alu.arithmetic(rs,rt, aluControl.getInput());
 
                     registers.writeRegisterValue(rd,result);
                     break;
                 case 'I':
-                    int rs = registers.getRegister(instruction.getRs());
-                    int rt = registers.getRegister(instruction.getRt());
-                    int imm = instruction.getImm();
+                    iIns = (IType) memory.getInstruction(pc.getAddress());
+                    control.opcodeDecode(iIns.getOpcode());
+                     rs = registers.readRegisterValue(iIns.getRS());
+                     rt = registers.readRegisterValue(iIns.getRT());
+                     imm = iIns.getImm();
 
-                    aluControl.buildInput(instruction.getFunct(),control);
-                    int result = alu.arithmetic(rs,rt, aluControl.getInput());
+                    result = alu.arithmetic(rs,rt, aluControl.getInput());
+
+                switch(iIns.getOpcode()){
+                    case 0b000100: //beq
+                        if(rs == rt){
+                            pc.setAddress(pc.getAddress() + imm);
+                        }
+                        break;
+                    case 0b001000: //addi
+                        registers.writeRegisterValue(rt, result);
+                        break;
+                    default: // lw or sw
+                        imm = (imm << 16) >> 16;
+                        address = rs + imm;
+                        result = memory.getData(address);
+                        if(iIns.getOpcode() == 0b100011){ //lw
+                            registers.writeRegisterValue(rt,result);
+                        }
+                        else{ //sw
+                            memory.setData(address,(byte)rt);
+                        }
+
+                        break;
+
+
+                }
 
                     break;
                 case 'J':
-                    int address = instruction.getAddress();
+                    jIns = (JType) memory.getInstruction(pc.getAddress());
+                    control.opcodeDecode(jIns.getOpcode());
+                    address = jIns.getAddress();
                     if(0 <= address && address < 256){
                         pc.setAddress(address);
                     }
@@ -96,7 +142,7 @@ public class Controller {
                         throw new IllegalArgumentException("Segmentation Fault");
                     }
                     break;
-                default
+                default:
                     break;
 
             }

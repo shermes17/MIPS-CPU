@@ -7,6 +7,14 @@ public class RType extends Instruction {
     private int funct;
     private int shamt;
 
+    public RType(){
+        super(0,'I');
+        this.rs = 0;
+        this.rt = 0;
+        this.rd = 0;
+        this.funct = 0;
+        this.shamt = 0;
+    }
 
     public RType(int instruction) {
         super(instruction >>> 26,'R'); // Opcode is the top 6 bits

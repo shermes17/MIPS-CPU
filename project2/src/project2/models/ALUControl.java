@@ -25,15 +25,15 @@ public class ALUControl {
 
 
         switch (control.getALUop()) {
-            case 0b00:
+            case 0b00: // lw & sw & addi
                 Input = 0b0010; // add
                 break;
-            case 0b01:
+            case 0b01: // beq
                 Input = 0b0110; // sub
                 break;
-            case 0b10:
             case 0b11:
-
+                break;
+            case 0b10:
                 switch (funct) {
                     case 0b100000:
                         Input = 0b0010; // add
