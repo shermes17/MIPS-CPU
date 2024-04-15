@@ -44,13 +44,12 @@ public class Controller {
 
 
         InputStream inputStream = new FileInputStream(fileName);
-        long fileSize = new File(fileName).length();
+        int num = (int) new File(fileName).length();
 
         // Read binary file data
-        byte[] data = new byte[(int) fileSize];
+        byte[] data = new byte[ num];
 
-        int num =  (int) fileSize;
-        memory.setNumInstructions((int)fileSize);
+        memory.setNumInstructions(num);
 
 
         int ins = 0;

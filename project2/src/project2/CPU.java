@@ -16,7 +16,7 @@ public final class CPU{
 
 
         ScoreBoard view = new ScoreBoard();
-        Controller controller = new Controller(view, "output.dat");
+        Controller controller = new Controller(view, "project2/output.dat");
         controller.runProcessor();
     }catch (IOException e) {
         System.err.println("Failed to initialize the Controller: " + e.getMessage());
