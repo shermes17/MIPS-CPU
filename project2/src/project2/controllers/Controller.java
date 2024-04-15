@@ -23,7 +23,7 @@ public class Controller {
 
     private Registers registers;
 
-    private ScoreBoard view;
+    private Scoreboard view;
     private Control control;
 
     private ALUControl aluControl;
@@ -32,7 +32,7 @@ public class Controller {
 
 
 
-    public Controller(ScoreBoard view, String fileName) throws IOException {
+    public Controller(Scoreboard view, String fileName) throws IOException {
         this.view = view;
         this.pc = new PC();
         this.memory = new Memory();
