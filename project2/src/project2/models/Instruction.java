@@ -1,5 +1,8 @@
 package project2.models;
 
+/*
+    Abstract class that is inhereted by the different instruction type classes
+ */
 public abstract class Instruction {
     private int opcode;
     private char type;

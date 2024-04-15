@@ -1,5 +1,8 @@
 package project2.models;
 
+/*
+    Should generate ALU Control signals
+ */
 public class ALUControl {
 
     private int Input;
@@ -10,20 +13,6 @@ public class ALUControl {
     }
 
     public void buildInput(int funct, Control control) {
-
-        /*
-            int ALUOp;
-        if (control.getALUOp1() == true && control.getALUOp0() == true) {
-            ALUOp = 0b11;
-        } else if (control.getALUOp1() == true) {
-            ALUOp = 0b10;
-        } else if (control.getALUOp0() == true) {
-            ALUOp = 0b01;
-        } else
-            ALUOp = 0b00;
-         */
-
-
         switch (control.getALUop()) {
             case 0b00: // lw & sw & addi
                 Input = 0b0010; // add
@@ -31,7 +20,7 @@ public class ALUControl {
             case 0b01: // beq
                 Input = 0b0110; // sub
                 break;
-            case 0b11:
+            case 0b11: // not used
                 break;
             case 0b10:
                 switch (funct) {
@@ -64,7 +53,4 @@ public class ALUControl {
         return Input;
     }
 
-    public void reset() {
-        Input = 0;
-    }
 }

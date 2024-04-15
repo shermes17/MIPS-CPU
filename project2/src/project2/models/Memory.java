@@ -1,32 +1,45 @@
 package project2.models;
 
+/*
+    Handles both data memory and instruction memory.
+    Additionally, it keeps tracks of reads and writes for the scoreboard
+ */
 public class Memory {
     private byte[] dataMemory;
     private byte[] instructionMemory;
 
+    private int writes;
+    private int reads;
+
     private int numInstructions;
 
     public Memory() {
+        this.writes = 0;
+        this.reads = 0;
 
-        this.dataMemory = new byte[256];
-        this.instructionMemory = new byte[256];
+        this.dataMemory = new byte[64];
+        this.instructionMemory = new byte[64];
 
 
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < dataMemory.length; i++) {
             dataMemory[i] = (byte) 0x00;
             instructionMemory[i] = (byte) 0x00;
         }
 
     }
 
+    //Handle data memory
     public void setData(int address, byte value) {
+        writes++;
         dataMemory[address] = value;
     }
 
     public byte getData(int address) {
+        reads++;
         return dataMemory[address];
     }
 
+    //Handle instruction memory
     public void setInstruction(int address, int value) {
         byte p1 = (byte) (value >>> 24 & 0xFF);
         byte p2 = (byte) (value >>> 16 & 0xFF);
@@ -64,5 +77,9 @@ public class Memory {
     public void setNumInstructions(int num){this.numInstructions = num;}
     public int getNumInstructions(){return this.numInstructions;}
 
+    public byte [] getMemory(){return dataMemory;}
+
+    public int getWrites(){return writes;}
+    public int getReads(){return reads;}
 
 }

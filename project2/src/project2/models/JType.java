@@ -1,5 +1,8 @@
 package project2.models;
 
+/*
+Handles all J-type instructions
+ */
 public class JType extends Instruction{
     private int address;
 

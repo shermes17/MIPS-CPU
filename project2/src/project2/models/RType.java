@@ -1,5 +1,8 @@
 package project2.models;
 
+/*
+Handles all J-type instructions
+ */
 public class RType extends Instruction {
     private int rs;
     private int rt;

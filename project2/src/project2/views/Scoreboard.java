@@ -1,63 +1,28 @@
 package project2.views;
 
 import project2.controllers.*;
+/*
+    The Scoreboard is built to design all pertinent information to the terminal
+    We designed the scoreboard to minimize how much information
+    is stored here.
+ */
 
 public class Scoreboard {
     private Controller controller;
-    private int programCounter;
-    private int numCycles;
-    private int[] aluOpsCount; // Order: AND, OR, ADD, SUB, SLT
-    private int[] registers;
-    private byte[] memory;
-    private int numReads;
-    private int numWrites;
-    private int currentInstruction;
-    /*
-    public Scoreboard() {
-        registers[0] = 0; // Ensure register 0 is always zero, if applicable.
-    } */
 
-    public void Scoreboard(Controller controller) {
-        this.controller = controller;
-        this.numWrites = 0;
-        this.numReads = 0;
-        this.numCycles = 0;
-        this.registers = new int[32];
-        this.memory = new byte[4096];
-        this.aluOpsCount = new int[5]; // Order: AND, OR, ADD, SUB, SLT
-        this.programCounter=0;
-        this.currentInstruction=0;
-
+    public Scoreboard(){
 
     }
 
-    public void display() {
+    public void displayBoard(int currentInstruction, int numCycles, int programCounter) {
         System.out.println("=============== SCOREBOARD ===============");
         System.out.println("Current Instruction Number: " + currentInstruction);
         System.out.println("Cycles: " + numCycles);
         System.out.println("Program Counter: 0x" + String.format("%08X", programCounter));
 
-        displayALUOperations();
-        displayMemoryOperations();
-        displayRegisterContents();
-        displayMemoryContents();
-
-        System.out.println("==========================================");
     }
 
-    private void displayALUOperations() {
-        System.out.println("\nALU Operations Count:");
-        System.out.printf("AND = %d, OR = %d, ADD = %d, SUB = %d, SLT = %d%n",
-                aluOpsCount[0], aluOpsCount[1], aluOpsCount[2],
-                aluOpsCount[3], aluOpsCount[4]);
-    }
-
-    private void displayMemoryOperations() {
-        System.out.println("\nMemory Operations:");
-        System.out.printf("Reads = %d, Writes = %d%n", numReads, numWrites);
-    }
-
-    private void displayRegisterContents() {
+    public void displayRegisters(int [] registers) {
         System.out.println("\nRegister Contents:");
         for (int i = 0; i < registers.length; i++) {
             System.out.printf("R%02d = %03d, ", i, registers[i]);
@@ -66,10 +31,10 @@ public class Scoreboard {
         }
     }
 
-    private void displayMemoryContents() {
+    public void displayMemory(byte [] memory) {
         System.out.println("\nMemory Contents:");
         for (int i = 0; i < memory.length; i++) {
-            if (i % 32 == 0) {
+            if (i % 4 == 0) {
                 System.out.println();
                 System.out.printf("%05X: ", i);
             }
@@ -78,41 +43,23 @@ public class Scoreboard {
         System.out.println();
     }
 
-    public void updateProgramCounter(int address) {
-        programCounter = address;
+    public void displayALUops(int and, int or, int add, int sub, int slt){
+        System.out.println("Number of ALU Operations:");
+        System.out.println("\tAND:\t"+and);
+        System.out.println("\tOR:\t"+or);
+        System.out.println("\tADD:\t"+add);
+        System.out.println("\tSUB:\t"+sub);
+        System.out.println("\tSLT:\t"+slt);
+    }
+    public void displayMemoryOps(int reads, int writes){
+        System.out.println("Number of Memory Reads and Writes:");
+        System.out.println("\tREADS:\t" + reads);
+        System.out.println("\tWRITES:\t" + writes);
     }
 
-    public void addCycles() {
-        numCycles++;
-    }
-
-    public void recordALUOperation(int type) {
-        if (type >= 0 && type < aluOpsCount.length) {
-            aluOpsCount[type]++;
-        }
-    }
-
-    public void updateRegister(int regNum, int regData) {
-        if (regNum > 0 && regNum < registers.length) { // Register 0 is constant zero if applicable
-            registers[regNum] = regData;
-        }
-    }
-
-    public void updateMemory(int address, byte memData) {
-        if (address >= 0 && address < memory.length) {
-            memory[address] = memData;
-        }
-    }
-
-    public void addReads() {
-        numReads++;
-    }
-
-    public void addWrites() {
-        numWrites++;
-    }
-
-    public void addInstruction(int instructionNum) {
-        currentInstruction = instructionNum;
+    public void displayRegisterOps(int reads, int writes){
+        System.out.println("Number of Register Reads and Writes:");
+        System.out.println("\tREADS:\t" + reads);
+        System.out.println("\tWRITES:\t" + writes);
     }
 }

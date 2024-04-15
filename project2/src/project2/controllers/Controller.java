@@ -1,3 +1,10 @@
+/**
+ * This file controls the flow of the cpu
+ * The controller with cycle through the instructions calling the appropriate
+ * logical blocks for the instructions
+ *
+ *
+ */
 package project2.controllers;
 
 import project2.models.*;
@@ -28,6 +35,7 @@ public class Controller {
 
     private ALUControl aluControl;
     private ALU alu;
+    private int cycles;
 
 
 
@@ -40,14 +48,12 @@ public class Controller {
         this.control = new Control();
         this.alu = new ALU();
         this.aluControl = new ALUControl();
+        this.cycles = 0;
 
 
-
-        InputStream inputStream = new FileInputStream(fileName);
-        int num = (int) new File(fileName).length();
-
-        // Read binary file data
-        byte[] data = new byte[ num];
+        // get data from output.dat file
+        int num =  (int) (Files.size(Paths.get(fileName))/4);
+        byte[] data = Files.readAllBytes(Paths.get(fileName));
 
         memory.setNumInstructions(num);
 
@@ -55,14 +61,14 @@ public class Controller {
         int ins = 0;
         int address = 0;
         for (int i = 0; i < data.length; i++) {
-            // Shift the current contents of ins 8 bits to the left and add the new byte
-            ins = (ins << 8) | (data[i] & 0xFF); // Mask the byte to prevent sign extension issues
+            // add bytes to int
+            ins = (ins << 8) | (data[i] & 0xFF);
 
-            // Every four bytes, we have a complete instruction
+            // Every four bytes, add the 32 bit int to memory
             if ((i + 1) % 4 == 0) {
                 memory.setInstruction(address, ins);
-                address += 4; // Advance address to the next instruction location
-                ins = 0; // Reset ins for the next instruction
+                address += 4; // offset of 4 bytes
+                ins = 0;
             }
         }
 
@@ -72,9 +78,9 @@ public class Controller {
 
 
         // figure out better loop conditions
-        while(pc.getAddress() < memory.getNumInstructions() * 4){
+        while(cycles <= memory.getNumInstructions()){
 
-            // get current instruct and execute
+            // get current instruction to get type
             Instruction ins =  memory.getInstruction(pc.getAddress());
             RType rIns;
             IType iIns;
@@ -86,56 +92,66 @@ public class Controller {
                 case 'R':
                     rIns = (RType) memory.getInstruction(pc.getAddress());
                     control.opcodeDecode(rIns.getOpcode());
+                    // get registers values
                      rs = registers.readRegisterValue(rIns.getRS());
-                     rt = registers.readRegisterValue(rIns.getRT());
+                     rt = registers.readRegisterValue(rIns.getRS());
                      rd = rIns.getRD();
-
-                    aluControl.buildInput(rIns.getFunct(),control);
+                     if(rIns.getRS() < 0 ||rIns.getRS() > 31 ||rIns.getRS() < 0 || rIns.getRS() > 31 || rd < 0 || rd > 31)
+                         throw new IllegalArgumentException("Invalid Register");
+                     // send data to alu to compute intruction
+                     aluControl.buildInput(rIns.getFunct(),control);
                      result = alu.arithmetic(rs,rt, aluControl.getInput());
 
+                     // write output
                     registers.writeRegisterValue(rd,result);
                     break;
                 case 'I':
                     iIns = (IType) memory.getInstruction(pc.getAddress());
                     control.opcodeDecode(iIns.getOpcode());
-                     rs = registers.readRegisterValue(iIns.getRS());
-                     rt = registers.readRegisterValue(iIns.getRT());
-                     imm = iIns.getImm();
+                    // get instruction data
+                    rs = registers.readRegisterValue(iIns.getRS());
+                    rt = registers.readRegisterValue(iIns.getRT());
+                    imm = iIns.getImm();
 
-                    result = alu.arithmetic(rs,rt, aluControl.getInput());
+                    if(rIns.getRS() < 0 ||rIns.getRS() > 31 ||rIns.getRS() < 0 || rIns.getRS() > 31)
+                        throw new IllegalArgumentException("Invalid Register");
+                     if (imm >= Short.MIN_VALUE && imm <= Short.MAX_VALUE)
+                         throw new IllegalArgumentException("Invalid Immediate");
+
+                     // send instruction to alu to compute output
+                    aluControl.buildInput(0b00000,control);
+                    result = alu.arithmetic(rs,imm, aluControl.getInput());
 
                 switch(iIns.getOpcode()){
                     case 0b000100: //beq
                         if(rs == rt){
-                            pc.setAddress(pc.getAddress() + imm);
+                            pc.setAddress(pc.getAddress() + imm - 4); //Program counter should not be iterated on beq
                         }
                         break;
                     case 0b001000: //addi
-                        registers.writeRegisterValue(rt, result);
+                        registers.writeRegisterValue(iIns.getRT(), result);
                         break;
                     default: // lw or sw
-                        imm = (imm << 16) >> 16;
+                        imm = (imm << 16) >> 16; // sign extend from 16 to 32 bits
                         address = rs + imm;
                         result = memory.getData(address);
                         if(iIns.getOpcode() == 0b100011){ //lw
-                            registers.writeRegisterValue(rt,result);
+                            registers.writeRegisterValue(rt,result); // load to register
                         }
                         else{ //sw
-                            memory.setData(address,(byte)rt);
+                            memory.setData(address,(byte)rt); // write to memory
                         }
-
                         break;
 
 
                 }
-
                     break;
                 case 'J':
                     jIns = (JType) memory.getInstruction(pc.getAddress());
                     control.opcodeDecode(jIns.getOpcode());
                     address = jIns.getAddress();
-                    if(0 <= address && address < 256){
-                        pc.setAddress(address);
+                    if(0 <= address && address < 64){
+                        pc.setAddress(address - 4); //Program counter should not be iterated on jmp
                     }
                     else{
                         throw new IllegalArgumentException("Segmentation Fault");
@@ -146,9 +162,19 @@ public class Controller {
 
             }
 
-
             // iterate to next instruction
+            cycles++;
             pc.setAddress(pc.getAddress() + 4);
+
+            // send model data to view to print the score board
+            view.displayBoard(cycles, cycles,pc.getAddress());
+            view.displayALUops(alu.getAnd(),alu.getOr(), alu.getAdd(), alu.getSub(), alu.getSlt());
+            view.displayMemoryOps(memory.getReads(), memory.getWrites());
+            view.displayRegisterOps(registers.getReads(), registers.getWrites());
+            view.displayRegisters(registers.getRegisters());
+            view.displayMemory(memory.getMemory());
+
+
         }
 
     }

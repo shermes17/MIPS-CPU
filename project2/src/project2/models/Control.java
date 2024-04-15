@@ -4,6 +4,12 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.ArrayList;
 
+/*
+    For a given opcode, this class should set the appropriate control signals to
+    true. Additionally, class needs functionality to reset all control signals for the next
+    operation
+ */
+
 public class Control {
     // Define control signals with enumerations
 
@@ -18,20 +24,25 @@ public class Control {
     }
     //For each signal, function sets appropriate opcodes to true by calling setSignal
     public void opcodeDecode(int opcode) {
+
         reset(); // Reset control signals before decoding new opcode
         switch (opcode) {
             case 0b000000: // arithmetic/R-format
-                setSignals(ControlSignal.REG_DST, ControlSignal.REG_WRITE, ControlSignal.ALU_OP1);
+                setSignals(ControlSignal.REG_DST, ControlSignal.REG_WRITE);
                 ALUop = 0b10; // 10
                 break;
             case 0b000010: // j
                 setSignals(ControlSignal.JUMP);
                 break;
             case 0b000100: // beq
-                setSignals(ControlSignal.BRANCH, ControlSignal.ALU_OP0);
+                setSignals(ControlSignal.BRANCH);
                 ALUop = 0b01; // 01
                 break;
-            case 0b100011: // lw
+            case 0b001000: //addi
+                setSignals(ControlSignal.ALU_SRC, ControlSignal.REG_WRITE, ControlSignal.MEM_READ);
+                ALUop = 0b00;
+                break;
+            case 0b100011: // lw (Corrected opcode for lw)
                 setSignals(ControlSignal.ALU_SRC, ControlSignal.MEM_TO_REG, ControlSignal.REG_WRITE, ControlSignal.MEM_READ);
                 ALUop = 0b00;
                 break;
@@ -42,6 +53,7 @@ public class Control {
             default :
                 break;
         }
+
     }
     //Set given signal to true
     private void setSignals(ControlSignal... signals) {

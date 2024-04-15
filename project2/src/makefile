@@ -21,7 +21,7 @@ default: classes
 classes: $(CLASSES:.java=.class)
 
 run: classes
-	java project2.CPUApp
+	java project2.CPU
 
 clean:
 	$(RM) $(CLASSES:.java=.class)

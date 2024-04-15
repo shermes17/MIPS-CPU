@@ -1,5 +1,8 @@
 package project2.models;
 
+/*
+    Handles all I-type instructions
+ */
 public class IType extends Instruction {
 
     private int rs;
@@ -12,7 +15,8 @@ public class IType extends Instruction {
         this.rt = 0;
         this.imm = 0;
     }
-
+    
+    //Appropriate shifts for i type
     public IType(int instruction){
         super(instruction >>> 26,'I');
         this.rs = (instruction >>> 21) & 0x1F;
